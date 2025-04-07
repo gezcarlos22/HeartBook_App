@@ -10,7 +10,7 @@ import { Icono } from "@/components/Icono";
 
 export default function Carrito() {
   const { librosComprados, eliminarDelCarrito, total } = useCart();
-  const precioEnvio = 500; // Puedes ajustar esto según necesites
+  const precioEnvio = 500; // Puedes ajustar esto según necesites (podria ser por distancia)
 
   // Estado para controlar el diálogo
   const [visible, setVisible] = React.useState(false);

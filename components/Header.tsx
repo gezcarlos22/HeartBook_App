@@ -11,10 +11,10 @@ interface HeaderProps {
 export const Header = ({ titulo }: HeaderProps) => {
     const [searchQuery, setSearchQuery] = React.useState('');
 
-    return (
+    return ( 
         <View style={styles.container}>
             <View style={styles.containerTitle}>
-                <Link asChild href="/perfil">
+                <Link asChild href="/onBoarding/uno">
                     <Pressable>
                         <Image
                             style={styles.avatar}
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         gap: 10,
-        backgroundColor: "rgba(0, 0, 0, 0.6)",//"#111E2F",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
         height: 150,
         borderBottomRightRadius: 40,
         borderBottomLeftRadius: 40,

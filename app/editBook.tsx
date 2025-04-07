@@ -87,13 +87,17 @@ export default function EditBook() {
                 <Image style={styles.book} source={{ uri: imagen }} />
                 <View style={{gap:10}}>
                   <BotonIcon 
-                    texto="Subir una Imagen" 
+                    icono="image"
+                    tamaño={18}
+                    texto="Subir Imagen " 
                     colorButton="#AC0505"  
                     ancho={170}
                     onPress={() => Alert.alert("Info", "Funcionalidad de subir imagen no implementada")}
                   />
                   <BotonIcon 
-                    texto="Borrar Imagen" 
+                    icono="camera"
+                    tamaño={18}
+                    texto="Tomar Foto " 
                     colorButton="#AC0505"  
                     ancho={170} 
                     onPress={() => setImagen("https://img.freepik.com/vector-gratis/fondo-abstracto-blanco_23-2148806276.jpg?w=360")}

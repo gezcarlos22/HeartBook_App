@@ -5,6 +5,7 @@ import { CardBook } from "@/components/CardBook";
 import { CardCategoria } from "@/components/CardCategoria";
 import { libros, librosUsados } from "@/data/libros"; 
 import {categorias} from "@/data/categorias"// Importa tus datos de libros
+import { Link } from "expo-router";
 
 export default function Index() {
     return (
