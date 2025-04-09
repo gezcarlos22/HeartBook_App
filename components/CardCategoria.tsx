@@ -9,6 +9,7 @@ interface CardCategoriaProps {
 }
 
 export const CardCategoria = ({imagen,titulo}:CardCategoriaProps) => {
+  
   return (
     <Link href={{ pathname: "/categorias", params: { titulo, imagen } }} asChild>
       <Pressable>

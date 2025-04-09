@@ -2,19 +2,25 @@ import * as React from "react";
 import { View, Text, StyleSheet, Image, Pressable} from "react-native";
 import { Searchbar } from 'react-native-paper';
 import { BotonIcon } from "./BotonIcon";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 interface HeaderProps {
     titulo: string;
+    onSearch: (query: string) => void; // Nueva prop para manejar la búsqueda
 }
 
-export const Header = ({ titulo }: HeaderProps) => {
+export const Header = ({ titulo, onSearch }: HeaderProps) => {
     const [searchQuery, setSearchQuery] = React.useState('');
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        onSearch(query); // Llama a la función de búsqueda del padre
+    };
 
     return ( 
         <View style={styles.container}>
             <View style={styles.containerTitle}>
-                <Link asChild href="/onBoarding/uno">
+                <Link asChild href="/(protected)/(tabs)/perfil">
                     <Pressable>
                         <Image
                             style={styles.avatar}
@@ -31,12 +37,12 @@ export const Header = ({ titulo }: HeaderProps) => {
             <View style={styles.containerSearchbar}>
                 <Searchbar
                     placeholder="Buscar Libro"
-                    onChangeText={setSearchQuery}
+                    onChangeText={handleSearch} // Usamos la nueva función
                     value={searchQuery}
                     elevation={0}
                     iconColor="white"
                     style={{
-                        backgroundColor: verdeOscuro, // Color constante
+                        backgroundColor: verdeOscuro,
                     }}
                     theme={{
                         colors: {
@@ -48,7 +54,6 @@ export const Header = ({ titulo }: HeaderProps) => {
                     }}
                 />
             </View>
-
         </View>
     );
 };

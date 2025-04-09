@@ -1,6 +1,6 @@
 import * as React from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { BotonIcon } from "./BotonIcon";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -10,9 +10,25 @@ interface HeaderProps {
     icono?: string;
     alturaImg?: number;
     imagen?: string;
+    onPress?: () => void;
 }
 
-export const HeaderCarrito = ({ titulo, colorText = "black", icono = "trash-alt", alturaImg = 150, imagen }: HeaderProps) => {
+export const HeaderCarrito = ({ 
+  onPress, 
+  titulo, 
+  colorText = "black", 
+  icono = "trash-alt", 
+  alturaImg = 150, 
+  imagen 
+}: HeaderProps) => {
+    const volver = () => {
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.dismissTo("/(protected)/(tabs)/home");
+        }
+      };
+
     return (
         <View style={styles.outerContainer}>
             {imagen ? (
@@ -27,28 +43,20 @@ export const HeaderCarrito = ({ titulo, colorText = "black", icono = "trash-alt"
                         style={styles.gradient}
                     />
                     <View style={styles.containerTitle}>
-                <Link asChild href="/">
-                    <BotonIcon icono="arrow-left-long" tamaño={20} />
-                </Link>
-                <Text style={[styles.title, { color: colorText }]}>{titulo}</Text>
-                <BotonIcon icono={icono} tamaño={20} />
-            </View>
+                        <BotonIcon icono="arrow-left-long" tamaño={20} onPress={volver}/>
+                        <Text style={[styles.title, { color: colorText }]}>{titulo}</Text>
+                        <BotonIcon icono={icono} tamaño={20} onPress={onPress} />
+                    </View>
                 </ImageBackground>
             ) : (
                 <View style={[styles.container, { height: 75}]}>
                     <View style={[styles.containerTitle]}>
-                        <Link asChild href="/">
-                            <BotonIcon icono="arrow-left-long" tamaño={20} />
-                        </Link>
+                        <BotonIcon icono="arrow-left-long" tamaño={20} onPress={volver}/>
                         <Text style={[styles.title, { color: colorText }]}>{titulo}</Text>
-                        <Link asChild href="/editBook">
-                            <BotonIcon icono={icono} tamaño={20} />
-                        </Link>
+                        <BotonIcon icono={icono} tamaño={20} onPress={onPress} />
                     </View>
                 </View>
             )}
-            
-            
         </View>
     );
 };

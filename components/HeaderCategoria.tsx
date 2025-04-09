@@ -2,33 +2,43 @@ import * as React from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
 import { Searchbar } from "react-native-paper";
 import { BotonIcon } from "./BotonIcon";
-import { Link, useLocalSearchParams } from "expo-router"; // Importa useLocalSearchParams
+import { Link, router} from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 
 interface HeaderProps {
     imagen: string;
     titulo: string;
+    onSearch: (query: string) => void; // Nueva prop
 }
 
-export const HeaderCategoria = ({ imagen, titulo }: HeaderProps) => {
-
+export const HeaderCategoria = ({ imagen, titulo, onSearch }: HeaderProps) => {
     const [searchQuery, setSearchQuery] = React.useState("");
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        onSearch(query); // Pasa la consulta al componente padre
+    };
+
+    const volver = () => {
+        if (router.canGoBack()) {
+            router.back();
+        } else {
+            router.dismissTo("/(protected)/(tabs)/home");
+        }
+    };
 
     return (
         <View style={styles.outerContainer}>
             <ImageBackground source={{ uri: imagen }} style={styles.container}>
-                {/* Gradiente vertical de arriba a abajo */}
                 <LinearGradient
                     colors={["rgba(0,0,0,0.8)", "transparent"]}
-                    start={{ x: 0, y: 0 }} // Empieza en la parte superior
-                    end={{ x: 0, y: 0.5 }} // Termina en la parte inferior
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0, y: 0.5 }}
                     style={styles.gradient}
                 />
 
                 <View style={styles.containerTitle}>
-                    <Link asChild href="/">
-                        <BotonIcon icono="arrow-left-long" tamaño={20} />
-                    </Link>
+                    <BotonIcon icono="arrow-left-long" tamaño={20} onPress={volver}/>
                     <Text style={styles.title}>{titulo}</Text>
                     <Link asChild href="/carrito">
                         <BotonIcon icono="cart-shopping" tamaño={20} />
@@ -38,7 +48,7 @@ export const HeaderCategoria = ({ imagen, titulo }: HeaderProps) => {
                 <View style={styles.containerSearchbar}>
                     <Searchbar
                         placeholder="Buscar Libro"
-                        onChangeText={setSearchQuery}
+                        onChangeText={handleSearch} // Usamos la nueva función
                         value={searchQuery}
                         elevation={0}
                         iconColor="white"
@@ -58,7 +68,6 @@ export const HeaderCategoria = ({ imagen, titulo }: HeaderProps) => {
     );
 };
 
-const defaultImage = "rgba(0, 0, 0, 0.7)"
 const FondoColor = "rgba(0, 0, 0, 0.7)";
 
 const styles = StyleSheet.create({

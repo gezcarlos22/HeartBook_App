@@ -1,6 +1,6 @@
 import * as React from "react";
 import { View, StyleSheet, ImageBackground, Text, Image, SafeAreaView, ScrollView } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { BotonIcon } from "@/components/BotonIcon";
 import { TextDetalles } from "@/components/TextDetalles";
@@ -39,6 +39,13 @@ export default function DetalleBoock() {
       agregarFavorito(libroActual);
     }
   };
+  const volver = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.dismissTo("/(protected)/(tabs)/home");
+    }
+  };
   
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -58,10 +65,10 @@ export default function DetalleBoock() {
           />
 
           <View style={styles.containerTitle}>
-            <Link asChild href="/">
-              <BotonIcon icono="arrow-left-long" tamaño={20} />
-            </Link>
-            <Link asChild href="/carrito">
+
+          <BotonIcon icono="arrow-left-long" tamaño={20} onPress={volver}/>
+
+          <Link asChild href="/carrito">
               <BotonIcon icono="cart-shopping" tamaño={20} />
             </Link>
           </View>
@@ -86,7 +93,7 @@ export default function DetalleBoock() {
               icono="heart" 
               tamaño={20} 
               onPress={handleFavoritoPress}
-              colorButton={esFavoritoActual ? "rgba(175,5,5,0.6)" : "rgba(0, 0, 0, 0.6)"}
+              colorButton={esFavoritoActual ? "rgba(0, 0, 0, 0.6)": "rgba(0, 0, 0, 0.6)"}
               colorText={esFavoritoActual ? "black" : "white"}
               libro={libroActual}
             />

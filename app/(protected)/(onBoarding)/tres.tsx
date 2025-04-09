@@ -3,26 +3,27 @@ import * as React from "react";
 import { BotonIcon } from "@/components/BotonIcon";
 import { Link } from "expo-router";
 
-export default function Uno() {
+export default function Tres() {
 
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={require("@/assets/images/fondo30.jpg")} style={styles.background}>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <View style={styles.overlayContainer}>
-            <Image source={require("@/assets/images/bookshelves.png")} style={styles.logo}/>
+            <Image source={require("@/assets/images/2.png")} style={styles.logo}/>
+            <Image source={require("@/assets/images/Cart.png")} style={styles.imagen}/>
             <View style={styles.containerText}>
-              <Text style={styles.title}>Descubre mundos sin salir de casa</Text>
-              <Text style={styles.description}>Busca entre miles de títulos, desde bestsellers hasta joyas escondidas. ¡Tu próxima lectura te espera!</Text>
+              <Text style={styles.title}>Adquiere tus próximos libros con confianza</Text>
+              <Text style={styles.description}>Proceso de compra intuitivo y seguro. ¡En pocos clics tendrás tu próximo libro listo para ser leido!</Text>
             </View>
             <View style={styles.containerBoton}>
-              <Link asChild href="/onBoarding/dos">
-                <BotonIcon
-                  alto={50}
-                  ancho={150}
-                  texto="Siguiente"
-                  colorButton="#AC0505" 
-                />
+                <Link asChild dismissTo href="/(protected)/(tabs)/home">
+                    <BotonIcon
+                        alto={50}
+                        ancho={150}
+                        texto="Comenzar"
+                        colorButton="#AC0505" 
+                    />
                 </Link>
             </View>
           </View>
@@ -63,8 +64,13 @@ const styles = StyleSheet.create({
     alignItems: "center", 
   },
   logo:{
+    flex:1/3,
+    height:150,
+    width:150
+  },
+  imagen:{
     height:300,
-    width:300
+    width:300,
   },
   title: {
     fontSize: 26,

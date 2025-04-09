@@ -1,18 +1,19 @@
 interface Libros {
     imagen: string;
-    portada: string;
     titulo: string;
+    precio: number;
+    portada: string;
     autor: string;
-    descripcion:string;
-    genero:string;
-    precio:number ;
-    paginas:number;
+    descripcion: string;
+    genero: string;
+    paginas: number;
     anio: number;
-    lenguaje:string;
-} 
-
+    lenguaje: string;
+    [key: string]: any; // Para propiedades adicionales
+  }
 export const libros: Libros[] = [
     {
+        id:"1",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/fde59a97-d6fb-4495-a3a7-f8f0eab3b637/d_1200_1200/portada_la-esposa-del-mercader_anna-jacobs_202501131130.webp",
         portada:"https://pbs.twimg.com/media/GjftXcSXkAAT1bP.jpg:large",
         titulo:"La esposa del mercader",
@@ -25,6 +26,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"2",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/4825869d-7a8b-4fee-9b05-f82cdd7aec60/d_360_620/portada_la-saga-de-los-longevos-2-los-hijos-de-adan_eva-garcia-saenz-de-urturi_202501201310.webp",
         portada:"https://et7hygnd3ye.exactdn.com/storage/los-hijos-de-adan-de-eva-garcia-saenz-de-urturi.jpg?strip=all&lossy=1&ssl=1&fit=1200%2C800",
         titulo:"La saga de los longevos 2",
@@ -37,6 +39,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"3",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/e1a00efe-8296-4cb4-9892-811304605f98/d_1200_1200/portada_las-fuerzas-contrarias_lorenzo-silva_202502031016.webp",
         portada:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/e1a00efe-8296-4cb4-9892-811304605f98/d_1200_1200/portada_las-fuerzas-contrarias_lorenzo-silva_202502031016.webp",
         titulo:"Las fuerzas contrarias",
@@ -49,6 +52,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"4",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/c84e0334-1bca-4904-a0fd-1c4d3f804bb1/d_1200_1200/portada_atrapados-en-el-parque-de-atracciones-maldito_iker-unzu_202501311020.webp",
         portada:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/9dcd6e10-fc53-4dbe-a92e-2131df63c7d3/d_1200_1200/409385__instagram_22.webp",
         titulo:"Atrapados en el parque de atracciones maldito",
@@ -61,6 +65,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"5",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/277aa8ce-c037-4d20-855f-4a953ef8d9f1/d_1200_1200/portada_destroza-este-diario-ahora-a-todo-color_keri-smith_201705301830.webp",
         portada:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/d9102dad-1025-46f0-be08-22b130ed31aa/d_1200_1200/254286__instagram_ig-destrozaestediarioacolor.webp",
         titulo:"Destroza este diario",
@@ -73,6 +78,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"6",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/fd6b0fba-ceba-4a9b-aceb-50c7e663ca76/d_1200_1200/portada_la-caida-de-la-casa-usher_edgar-allan-poe_202502101404.webp",
         portada:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/6e79a855-a9e2-4f1f-b8be-bd0996093724/d_1200_1200/la-caida-de-la-casa-usher_9788445019542_contra_202502101403.webp",
         titulo:"La caída de la Casa Usher",
@@ -85,6 +91,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"7",
         imagen:"https://cdn.swiatksiazki.pl/media/catalog/product/1/8/1899907236418.jpg?width=650&height=650&store=default&image-type=small_image",
         portada:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/fotos/326/original/portada_mickey7_edward-ashton_202205041120.jpg",
         titulo:"Mickey7",
@@ -97,6 +104,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"8",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/c0b53134-7b78-4324-8738-6b62c876da78/d_1200_1200/portada_el-ojo-del-mundo-n-0114_robert-jordan_201910151031.webp",
         portada:"https://images.justwatch.com/poster/306620911/s718/la-rueda-del-tiempo.jpg",
         titulo:"La Rueda del Tiempo",
@@ -109,6 +117,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"9",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/fotos/405/original/portada_the-horus-heresy-siege-of-terra-n-04-saturnino_dan-abnett_202502170906.jpg",
         portada:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/fotos/405/original/portada_the-horus-heresy-siege-of-terra-n-04-saturnino_dan-abnett_202502170906.jpg",
         titulo:"The Horus Heresy: Siege of Terra",
@@ -121,6 +130,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"10",
         imagen:"https://acdn-us.mitiendanube.com/stores/004/088/117/products/688009-6e44a959c3e6b194ba17277408455416-1024-1024.webp",
         portada:"https://es.web.img3.acsta.net/pictures/14/09/12/10/51/011753.jpg",
         titulo:"Los Juegos del Hambre",
@@ -133,6 +143,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"11",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/24fb5128-9aaf-4802-8222-047db4b93ef3/d_360_620/portada_el-senor-de-los-anillos_j-r-r-tolkien_201601252224.webp",
         portada:"https://es.web.img3.acsta.net/medias/nmedia/18/89/67/45/20061512.jpg",
         titulo:"El Señor de los Anillos",
@@ -145,6 +156,7 @@ export const libros: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"12",
         imagen:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/629c3119-cc64-42b3-b73a-1b1c67d3bae4/d_360_620/portada_el-plan-maestro_javier-sierra_202501281211.webp",
         portada:"https://proassetspdlcom.cdnstatics2.com/usuaris/libros/thumbs/0dac71ad-335f-41cc-b55a-4a5f4065d9d3/d_1200_1200/409258__instagram_JavierSierra2000x2000.webp",
         titulo:"El plan maestro",
@@ -161,6 +173,7 @@ export const libros: Libros[] = [
 
 export const librosUsados: Libros[] = [
     {
+        id:"1",
         imagen:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_2858-9926a5f72c41fe7acb17375803411346-1024-1024.webp",
         portada:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_2858-9926a5f72c41fe7acb17375803411346-1024-1024.webp",
         titulo:"Blackwater 4 : La guerra",
@@ -173,6 +186,7 @@ export const librosUsados: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"2",
         imagen:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6508-ec93ba99746b7d9e5917423513347199-1024-1024.webp",
         portada:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6508-ec93ba99746b7d9e5917423513347199-1024-1024.webp",
         titulo:"El tesoro de bastion caido",
@@ -185,6 +199,7 @@ export const librosUsados: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"3",
         imagen:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6458-763be70dbbcbed92e217422708114380-1024-1024.webp",
         portada:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6458-763be70dbbcbed92e217422708114380-1024-1024.webp",
         titulo:"Saga Lazos de Sangre",
@@ -197,6 +212,7 @@ export const librosUsados: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"4",
         imagen:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6507-4086e832427bccbf5c17423524105661-1024-1024.webp",
         portada:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6507-4086e832427bccbf5c17423524105661-1024-1024.webp",
         titulo:"The summer garden",
@@ -209,6 +225,7 @@ export const librosUsados: Libros[] = [
         lenguaje:"EN"
     },
     {
+        id:"5",
         imagen:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6204-6df68141623150965717419945281867-1024-1024.webp",
         portada:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6204-6df68141623150965717419945281867-1024-1024.webp",
         titulo:"Hora de Bailar: Juntas para ganar",
@@ -221,6 +238,7 @@ export const librosUsados: Libros[] = [
         lenguaje:"ES"
     },
     {
+        id:"6",
         imagen:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6327-cfc85b895c164a1b0817419955282929-1024-1024.webp",
         portada:"https://acdn-us.mitiendanube.com/stores/002/323/415/products/img_6327-cfc85b895c164a1b0817419955282929-1024-1024.webp",
         titulo:"The Infinite Sea",

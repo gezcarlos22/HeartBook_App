@@ -3,27 +3,29 @@ import * as React from "react";
 import { BotonIcon } from "@/components/BotonIcon";
 import { Link } from "expo-router";
 
-export default function Tres() {
+export default function Dos() {
 
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={require("@/assets/images/fondo30.jpg")} style={styles.background}>
         <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <View style={styles.overlayContainer}>
-            <Image source={require("@/assets/images/Cart.png")} style={styles.logo}/>
+            <Image source={require("@/assets/images/2.png")} style={styles.logo}/>
+            <Image source={require("@/assets/images/BookLover.png")} style={styles.imagen}/>
             <View style={styles.containerText}>
-              <Text style={styles.title}>Adquiere tus próximos libros con confianza</Text>
-              <Text style={styles.description}>Proceso de compra intuitivo y seguro. ¡En pocos clics tendrás tu próximo libro listo para ser leido!</Text>
+              <Text style={styles.title}>Comparte tus tesoros literarios</Text>
+              <Text style={styles.description}>¿Ya leíste ese libro hasta la última página? ¡Súbelo y gánale un dinero mientras encuentra un nuevo lector!</Text>
             </View>
             <View style={styles.containerBoton}>
-                <Link asChild href="/">
-                    <BotonIcon
-                        alto={50}
-                        ancho={150}
-                        texto="Comenzar"
-                        colorButton="#AC0505" 
-                    />
-                </Link>
+              <Link asChild href="/(protected)/(onBoarding)/tres">
+                <BotonIcon
+                    alto={50}
+                    ancho={150}
+                    texto="Siguiente"
+                    colorButton="#AC0505" 
+                  />
+              </Link>
+              <Link dismissTo style={{fontWeight:"bold"}} href="/(protected)/(tabs)/home">Saltar</Link>
             </View>
           </View>
         </View>
@@ -41,12 +43,13 @@ const styles = StyleSheet.create({
   },
   containerText: {
     flexDirection: "column",
-    
     width: "100%",
     gap: 10,
   },
   containerBoton:{
     marginTop:20,
+    gap:10,
+    alignItems:"center"
   },
   textInputStyle: {
     backgroundColor: "rgba(255,255,255,1)",
@@ -63,6 +66,11 @@ const styles = StyleSheet.create({
     alignItems: "center", 
   },
   logo:{
+    flex:1/3,
+    height:150,
+    width:150
+  },
+  imagen:{
     height:300,
     width:300
   },
