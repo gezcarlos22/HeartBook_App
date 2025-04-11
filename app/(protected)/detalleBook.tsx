@@ -7,9 +7,11 @@ import { TextDetalles } from "@/components/TextDetalles";
 import { useLocalSearchParams } from "expo-router";
 import { useCart } from "@/contexts/CartContext";
 import { useFavoritos } from '@/contexts/FavoritosContext';
-
+import { HeaderCarrito } from "@/components/HeaderCarrito";
+import FastImage from 'react-native-fast-image';
+import { ActivityIndicator } from 'react-native';
 export default function DetalleBoock() {
-  const { agregarAlCarrito } = useCart();
+  const { agregarAlCarrito, librosComprados } = useCart();
   const { agregarFavorito, removerFavorito, esFavorito } = useFavoritos();
   const libro = useLocalSearchParams();
   
@@ -21,12 +23,13 @@ export default function DetalleBoock() {
     descripcion: typeof libro.descripcion === "string" ? libro.descripcion : "Descripción no disponible",
     genero: typeof libro.genero === "string" ? libro.genero : "Género no disponible",
     precio: typeof libro.precio === "string" ? parseFloat(libro.precio) : 0,
-    paginas: typeof libro.paginas === "string" ? parseInt(libro.paginas) : 0,
+    paginas: typeof libro.paginas === "string"  ? parseInt(libro.paginas) : 0,
     anio: typeof libro.anio === "string" ? parseInt(libro.anio) : 0,
     lenguaje: typeof libro.lenguaje === "string" ? libro.lenguaje : "ES",
   };
 
   const esFavoritoActual = esFavorito(libroActual.titulo);
+  const estaEnCarrito = librosComprados.some(libro => libro.titulo === libroActual.titulo);
 
   const handleAgregarAlCarrito = () => {
     agregarAlCarrito(libroActual);
@@ -39,14 +42,39 @@ export default function DetalleBoock() {
       agregarFavorito(libroActual);
     }
   };
-  const volver = () => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.dismissTo("/(protected)/(tabs)/home");
-    }
+
+  const navCarrito = () => {
+    router.navigate("/(protected)/carrito")
   };
+
+  const BookImage = React.memo(({ uri }: { uri: string }) => {
+    const [isLoading, setIsLoading] = React.useState(true);
   
+    return (
+      <View style={styles.bookContainer}>
+        <FastImage
+          source={{ 
+            uri: uri,
+            priority: FastImage.priority.high,
+            cache: FastImage.cacheControl.immutable
+          }}
+          style={styles.book}
+          resizeMode={FastImage.resizeMode.contain}
+          onLoadStart={() => setIsLoading(true)}
+          onLoadEnd={() => setIsLoading(false)}
+          onError={() => console.log("Error loading image")}
+        />
+        {isLoading && (
+          <ActivityIndicator 
+            style={styles.loadingIndicator} 
+            size="large" 
+            color="#AC0505" 
+          />
+        )}
+      </View>
+    );
+  });
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
@@ -64,14 +92,12 @@ export default function DetalleBoock() {
             style={styles.gradient}
           />
 
-          <View style={styles.containerTitle}>
-
-          <BotonIcon icono="arrow-left-long" tamaño={20} onPress={volver}/>
-
-          <Link asChild href="/carrito">
-              <BotonIcon icono="cart-shopping" tamaño={20} />
-            </Link>
-          </View>
+          <HeaderCarrito 
+            colorText="white"  
+            alturaImg={150} 
+            cartItemCount={librosComprados.length} 
+            onPress={navCarrito}
+          />
         </ImageBackground>
 
         <View style={styles.overlayContainer}>
@@ -81,12 +107,7 @@ export default function DetalleBoock() {
             end={{ x: 0, y: 0 }}
             style={styles.gradient}
           />
-          <Image
-            style={styles.book}
-            source={{
-              uri: libroActual.imagen,
-            }}
-          />
+          <BookImage uri={libroActual.imagen} />
           <View style={styles.iconHeart}>
             <Text style={[styles.description, { textAlign:"center", fontSize: 14}]}>{libro.genero}</Text>
             <BotonIcon 
@@ -102,7 +123,7 @@ export default function DetalleBoock() {
             <Text style={styles.title}>{libro.titulo}</Text>
             <Text style={[styles.description, { textAlign:"center"}]}>{libro.autor}</Text>
           </View>
-          <TextDetalles/>
+          <TextDetalles paginas={libroActual.paginas} anio={libroActual.anio} lenguaje={libroActual.lenguaje}/>
           <View style={[{width:"100%", marginBottom:5}]}>
             <Text style={[styles.description, { fontSize: 18 }]}>Descripcion</Text>
           </View>
@@ -118,9 +139,10 @@ export default function DetalleBoock() {
               <BotonIcon 
                 alto={40} 
                 ancho={170} 
-                texto="Agregar al carrito" 
-                colorButton="#AC0505" 
-                onPress={handleAgregarAlCarrito}
+                texto={estaEnCarrito ? "En el carrito" : "Agregar al carrito"} 
+                colorButton={estaEnCarrito ? '#4CAF50': "#AC0505"} 
+                onPress={estaEnCarrito ? undefined : handleAgregarAlCarrito}
+                disabled={estaEnCarrito}
               />
             </View>
           </View>
@@ -216,5 +238,14 @@ const styles = StyleSheet.create({
     alignItems:"center",
     marginTop:-40,
     marginBottom:-10,
-  }
+  },
+  bookContainer: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -80,
+  },
+  loadingIndicator: {
+    position: 'absolute',
+  },
 });

@@ -8,10 +8,11 @@ import { LinearGradient } from "expo-linear-gradient";
 interface HeaderProps {
     imagen: string;
     titulo: string;
-    onSearch: (query: string) => void; // Nueva prop
+    onSearch: (query: string) => void; 
+    cartItemCount?: number;
 }
 
-export const HeaderCategoria = ({ imagen, titulo, onSearch }: HeaderProps) => {
+export const HeaderCategoria = ({ imagen, titulo, onSearch, cartItemCount }: HeaderProps) => {
     const [searchQuery, setSearchQuery] = React.useState("");
 
     const handleSearch = (query: string) => {
@@ -41,8 +42,12 @@ export const HeaderCategoria = ({ imagen, titulo, onSearch }: HeaderProps) => {
                     <BotonIcon icono="arrow-left-long" tamaño={20} onPress={volver}/>
                     <Text style={styles.title}>{titulo}</Text>
                     <Link asChild href="/carrito">
-                        <BotonIcon icono="cart-shopping" tamaño={20} />
-                    </Link>
+                    <BotonIcon 
+                      icono="cart-shopping" 
+                      tamaño={20} 
+                      badgeCount={cartItemCount} // Pasa el conteo del carrito
+                    />
+                </Link>
                 </View>
 
                 <View style={styles.containerSearchbar}>

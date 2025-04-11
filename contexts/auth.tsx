@@ -1,27 +1,34 @@
 import React, { createContext, useState, useContext } from "react";
 
 type User = {
+  email: string;
   name: string;
 };
 
 type AuthContextType = {
   user: User | null;
-  login: (username: string) => void;
+  login: (email: string, password: string) => boolean;
   logout: () => void;
 };
 
-// Proporciona un valor por defecto que coincida con tu tipo
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  login: () => {},
+  login: () => false,
   logout: () => {},
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = (username: string) => {
-    setUser({ name: username });
+  const login = (email: string, password: string) => {
+    if (email === "ceg290698@gmail.com" && password === "1234") {
+      setUser({ 
+        email: email,
+        name: email.split('@')[0] // Usamos la parte antes del @ como nombre
+      });
+      return true;
+    }
+    return false;
   };
 
   const logout = () => {
@@ -35,5 +42,4 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// Ahora useAuth siempre devolverá AuthContextType, nunca null
 export const useAuth = () => useContext(AuthContext);

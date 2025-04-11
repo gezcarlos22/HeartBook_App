@@ -4,7 +4,6 @@ import { SegmentedButtons } from 'react-native-paper';
 import { CardBook } from './CardBook';
 import { useFavoritos } from '@/contexts/FavoritosContext';
 import { useLibrosSubidos } from '@/contexts/LibrosSubidosContext';
-import { BotonIcon } from './BotonIcon';
 
 export const Segmented = () => {
   const [value, setValue] = React.useState('biblioteca');
@@ -57,27 +56,14 @@ export const Segmented = () => {
           paginas={parseInt(libro.paginas)}
           anio={parseInt(libro.anio)}
           lenguaje={libro.lenguaje}
+          icono="trash-alt"
         />
       ));
     }
   };
 
-  const { borrarTodosLosLibros } = useLibrosSubidos();
-
-  const handleEliminarTodo = () => {
-    Alert.alert(
-      "Confirmación",
-      "¿Estás seguro de que quieres borrar todos los libros?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        { text: "Sí, borrar", onPress: borrarTodosLosLibros }
-      ]
-    );
-  };
-
   return (
     <>
-      <BotonIcon icono="trash-alt" tamaño={20} onPress={handleEliminarTodo}/>
       <SegmentedButtons
         theme={{
           colors: {
@@ -121,6 +107,6 @@ const styles = StyleSheet.create({
     gap: 20,
     justifyContent: "center", 
     marginTop: 10,
-    paddingBottom: 20, // Añade espacio al final
+    marginBottom:70,
   },
 });

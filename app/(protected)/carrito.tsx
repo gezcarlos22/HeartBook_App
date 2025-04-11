@@ -1,48 +1,53 @@
-import { SafeAreaView, StyleSheet, ScrollView, ImageBackground, View, Text, TouchableOpacity} from "react-native";
+import { SafeAreaView, StyleSheet, ScrollView, ImageBackground, View, Text } from "react-native";
 import * as React from "react";
 import { HeaderCarrito } from "@/components/HeaderCarrito";
 import { LinearGradient } from "expo-linear-gradient";
 import { BotonIcon } from "@/components/BotonIcon";
 import { CardBusqueda } from "@/components/CardBusqueda";
 import { useCart } from "@/contexts/CartContext";
-import { Modal} from 'react-native';
-import { Icono } from "@/components/Icono";
+import { ConfirmModal } from "@/components/ConfirmModal";
 
 export default function Carrito() {
-  const { librosComprados, eliminarDelCarrito, total } = useCart();
-  const precioEnvio = 500; // Puedes ajustar esto según necesites (podria ser por distancia)
+  const { librosComprados, eliminarDelCarrito, eliminarTodosLosLibros, total } = useCart();
+  const precioEnvio = total/10;
 
-  // Estado para controlar el diálogo
-  const [visible, setVisible] = React.useState(false);
+  // Estados para los modales
+  const [modalEliminarVisible, setModalEliminarVisible] = React.useState(false);
+  const [modalEliminarTodosVisible, setModalEliminarTodosVisible] = React.useState(false);
   const [libroAEliminar, setLibroAEliminar] = React.useState<number | null>(null);
 
   const showDialog = (index: number) => {
     setLibroAEliminar(index);
-    setVisible(true);
-  };
-
-  const hideDialog = () => {
-    setVisible(false);
-    setLibroAEliminar(null);
+    setModalEliminarVisible(true);
   };
 
   const confirmarEliminacion = () => {
     if (libroAEliminar !== null) {
       eliminarDelCarrito(libroAEliminar);
     }
-    hideDialog();
+    setModalEliminarVisible(false);
+  };
+
+  const confirmarEliminarTodos = () => {
+    eliminarTodosLosLibros();
+    setModalEliminarTodosVisible(false);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={require("@/assets/images/fondo30.jpg")} style={styles.background}>
-        <HeaderCarrito titulo="Carrito" colorText="black"/>
+        <HeaderCarrito 
+          titulo="Carrito" 
+          colorText="black"
+          icono={librosComprados.length > 0 ? "trash-alt" : "trash-alt"}
+          onPress={() => librosComprados.length > 0 && setModalEliminarTodosVisible(true)}
+        />
+        
         <ScrollView style={styles.containerScroll}>
-
-        {librosComprados.length === 0 ? (
-          <Text style={{ textAlign: "center", marginTop: 20, fontSize: 18 }}>El carrito está vacío</Text>
+          {librosComprados.length === 0 ? (
+            <Text style={{ textAlign: "center", marginTop: 20, fontSize: 18 }}>El carrito está vacío</Text>
           ) : (
-           librosComprados.map((libro, index) => (
+            librosComprados.map((libro, index) => (
               <View key={index} style={styles.cardContainer}>
                 <CardBusqueda
                   imagen={libro.imagen}
@@ -63,36 +68,27 @@ export default function Carrito() {
           )}
         </ScrollView>
 
-        <Modal
-            visible={visible}
-            transparent={true}
-            animationType="fade"
-            onRequestClose={hideDialog}
-          >
-            <View style={styles.modalOverlay}>
-              <View style={styles.modalContainer}>
-                <Icono icon="trash-alt" size={40} color="#AC0505" />
-                <Text style={styles.modalTitle}>Eliminar libro</Text>
-                <Text style={styles.modalText}>
-                  ¿Estás seguro que deseas eliminar este libro de tu carrito?
-                </Text>
-                <View style={styles.modalButtons}>
-                  <TouchableOpacity 
-                    style={[styles.modalButton, styles.cancelButton]} 
-                    onPress={hideDialog}
-                  >
-                    <Text style={[styles.buttonText, {color:""}]}>Cancelar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={[styles.modalButton, styles.deleteButton]} 
-                    onPress={confirmarEliminacion}
-                  >
-                    <Text style={styles.buttonText}>Eliminar</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </Modal>
+        {/* Modal para eliminar un libro */}
+        <ConfirmModal
+          visible={modalEliminarVisible}
+          onCancel={() => setModalEliminarVisible(false)}
+          onConfirm={confirmarEliminacion}
+          title="Eliminar libro"
+          message="¿Estás seguro que deseas eliminar este libro de tu carrito?"
+          icon="trash-alt"
+          confirmText="Eliminar"
+        />
+
+        {/* Modal para eliminar todos los libros */}
+        <ConfirmModal
+          visible={modalEliminarTodosVisible}
+          onCancel={() => setModalEliminarTodosVisible(false)}
+          onConfirm={confirmarEliminarTodos}
+          title="Vaciar carrito"
+          message="¿Estás seguro que deseas eliminar todos los libros de tu carrito?"
+          icon="trash-alt"
+          confirmText="Eliminar todos"
+        />
         
         <View style={styles.overlayContainer}>
           <LinearGradient
@@ -108,15 +104,21 @@ export default function Carrito() {
             </View>
             <View style={styles.containerTextPrice}>
               <Text style={styles.description}>Envio</Text>
-              <Text style={styles.description}>+${precioEnvio}</Text>
+              <Text style={styles.description}>+(10%)${precioEnvio}</Text>
             </View>
             <View style={styles.containerTextPrice}>
               <Text style={styles.title}>Total</Text> 
-              <Text style={[styles.title, { color:"#AC0505" }]}>${total + precioEnvio}</Text> 
+              <Text style={[styles.title, { color:'#4CAF50' }]}>${total + precioEnvio}</Text> 
             </View>
           </View>
           <View style={styles.containerCompra}>
-            <BotonIcon alto={40} ancho={310} texto="Continuar compra" colorButton="#AC0505"/>
+            <BotonIcon 
+              alto={40} 
+              ancho={310} 
+              texto="Continuar compra" 
+              colorButton={librosComprados.length > 0 ? '#4CAF50' : "#666666"}
+              disabled={librosComprados.length === 0}
+            />
           </View>
         </View>
       </ImageBackground>
@@ -186,51 +188,5 @@ export default function Carrito() {
   description: {
     fontSize: 18,
     color: "#dadada",
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalContainer: {
-    width: '80%',
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
-    alignItems: 'center',
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#AC0505',
-    marginVertical: 10,
-  },
-  modalText: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  modalButton: {
-    padding: 10,
-    borderRadius: 20,
-    width: '48%',
-    alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#ddd',
-  },
-  deleteButton: {
-    backgroundColor: '#AC0505',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
   },
  });

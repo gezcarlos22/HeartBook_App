@@ -17,6 +17,7 @@ interface CartContextType {
     librosComprados: Libro[];
     agregarAlCarrito: (libro: Libro) => void;
     eliminarDelCarrito: (index: number) => void;
+    eliminarTodosLosLibros: () => void;
     total: number;
 }
 
@@ -24,6 +25,7 @@ const CartContext = createContext<CartContextType>({
     librosComprados: [],
     agregarAlCarrito: () => {},
     eliminarDelCarrito: () => {},
+    eliminarTodosLosLibros: () => {},
     total: 0,
 });
 
@@ -40,10 +42,20 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         setLibrosComprados(nuevosLibros);
     };
 
+    const eliminarTodosLosLibros = () => {
+        setLibrosComprados([]);
+    };
+
     const total = librosComprados.reduce((sum, libro) => sum + libro.precio, 0);
 
     return (
-        <CartContext.Provider value={{ librosComprados, agregarAlCarrito, eliminarDelCarrito, total }}>
+        <CartContext.Provider value={{ 
+            librosComprados, 
+            agregarAlCarrito, 
+            eliminarDelCarrito, 
+            eliminarTodosLosLibros,
+            total 
+        }}>
             {children}
         </CartContext.Provider>
     );

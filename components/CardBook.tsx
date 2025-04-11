@@ -17,9 +17,10 @@ interface CardBookProps {
     paginas?:number, 
     anio?:number, 
     lenguaje?:string
+    icono?:string;
   }
 
-  export const CardBook = ({onPress,colorCard="",colorText="black",imagen,titulo,precio,portada,autor,descripcion,genero, paginas, anio, lenguaje}:CardBookProps) => {
+  export const CardBook = ({onPress,colorCard="",colorText="black", icono="heart",imagen,titulo,precio,portada,autor,descripcion,genero, paginas, anio, lenguaje, }:CardBookProps) => {
     const libro = {
       imagen, titulo, precio, portada, autor, descripcion, genero, paginas, anio, lenguaje
     };
@@ -48,11 +49,12 @@ interface CardBookProps {
             <Image style={styles.book} source={{ uri: imagen }} />
             <View style={styles.containerBotonHeart}>
               <BotonIcon 
-                icono="heart" 
+                icono={icono}
                 tamaño={20} 
                 alto={40} 
                 ancho={40} 
                 libro={libro}
+                onPress={onPress}
               />
             </View> 
             <View style={styles.containerText}>

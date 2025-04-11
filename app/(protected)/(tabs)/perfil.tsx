@@ -14,19 +14,13 @@ export default function Perfil() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        <ImageBackground
+      <ImageBackground
           source={require("@/assets/images/fondo30.jpg")}
           style={styles.image}
           resizeMode="cover"
         >
-          <LinearGradient
-            colors={["rgba(0,0,0,1)", "transparent"]}
-            start={{ x: 0, y: 1 }}
-            end={{ x: 0, y: 0.9}}
-            style={styles.gradient}
-          />
-          
+      <View style={styles.container}>
+        
           <HeaderCarrito 
             colorText="white" 
             icono="gear" 
@@ -34,7 +28,6 @@ export default function Perfil() {
             imagen="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiW2ur1JV-AdfDCwzsZfEQC6lTh0qG191AqEiZqOazA85ZIn3tziTmGNldDrkR57tA5KMkJWddA_p-shkeO1Vej_V8wCfOGKpTIRd27D4JN1f3Nh4Nqk7zPImXtFXTzmHmjGJZdX4n0NbQM/s1600/C%25C3%25B3mo+armamos+el+fondo+bibliogr%25C3%25A1fico+de+una+biblioteca.jpg"
             onPress={toggleDrawer}
           />
-        </ImageBackground>
 
         <View style={styles.overlayContainer}>
           <Image
@@ -45,7 +38,9 @@ export default function Perfil() {
             <Text style={styles.title}>Gez Carlos</Text>
             <Text style={styles.description}>Cordoba Argentina</Text>
           </View>
-          <Segmented />
+
+            <Segmented />
+
         </View>
 
         {/* Drawer Menu */}
@@ -54,6 +49,7 @@ export default function Perfil() {
           onClose={() => setDrawerVisible(false)} 
         />
       </View>
+      </ImageBackground>
     </SafeAreaView>
   );
 }

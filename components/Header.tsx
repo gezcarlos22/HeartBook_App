@@ -6,15 +6,16 @@ import { Link, router } from "expo-router";
 
 interface HeaderProps {
     titulo: string;
-    onSearch: (query: string) => void; // Nueva prop para manejar la búsqueda
+    onSearch: (query: string) => void;
+    cartItemCount?: number; // Nueva prop para el conteo del carrito
 }
 
-export const Header = ({ titulo, onSearch }: HeaderProps) => {
+export const Header = ({ titulo, onSearch, cartItemCount }: HeaderProps) => {
     const [searchQuery, setSearchQuery] = React.useState('');
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
-        onSearch(query); // Llama a la función de búsqueda del padre
+        onSearch(query);
     };
 
     return ( 
@@ -30,7 +31,11 @@ export const Header = ({ titulo, onSearch }: HeaderProps) => {
                 </Link>
                 <Text style={styles.title}>{titulo}</Text>
                 <Link asChild href="/carrito">
-                    <BotonIcon icono="cart-shopping" tamaño={20} />
+                    <BotonIcon 
+                      icono="cart-shopping" 
+                      tamaño={20} 
+                      badgeCount={cartItemCount} // Pasa el conteo del carrito
+                    />
                 </Link>
             </View>
 

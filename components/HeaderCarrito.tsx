@@ -11,15 +11,17 @@ interface HeaderProps {
     alturaImg?: number;
     imagen?: string;
     onPress?: () => void;
+    cartItemCount?: number;
 }
 
 export const HeaderCarrito = ({ 
   onPress, 
   titulo, 
   colorText = "black", 
-  icono = "trash-alt", 
+  icono = "cart-shopping", 
   alturaImg = 150, 
-  imagen 
+  imagen,
+  cartItemCount
 }: HeaderProps) => {
     const volver = () => {
         if (router.canGoBack()) {
@@ -45,7 +47,7 @@ export const HeaderCarrito = ({
                     <View style={styles.containerTitle}>
                         <BotonIcon icono="arrow-left-long" tamaño={20} onPress={volver}/>
                         <Text style={[styles.title, { color: colorText }]}>{titulo}</Text>
-                        <BotonIcon icono={icono} tamaño={20} onPress={onPress} />
+                        <BotonIcon icono={icono} tamaño={20} onPress={onPress} badgeCount={cartItemCount} />
                     </View>
                 </ImageBackground>
             ) : (
@@ -53,7 +55,7 @@ export const HeaderCarrito = ({
                     <View style={[styles.containerTitle]}>
                         <BotonIcon icono="arrow-left-long" tamaño={20} onPress={volver}/>
                         <Text style={[styles.title, { color: colorText }]}>{titulo}</Text>
-                        <BotonIcon icono={icono} tamaño={20} onPress={onPress} />
+                        <BotonIcon icono={icono} tamaño={20} onPress={onPress} badgeCount={cartItemCount}/>
                     </View>
                 </View>
             )}

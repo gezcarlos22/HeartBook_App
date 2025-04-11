@@ -1,7 +1,8 @@
 import React from "react";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Icono } from "@/components/Icono";
 import { useFavoritos } from '@/contexts/FavoritosContext';
+import { Badge } from "react-native-paper";
 
 interface BotonIconProps {
   texto?: string;
@@ -13,7 +14,8 @@ interface BotonIconProps {
   ancho?: number;
   alto?: number;
   libro?: any;
-  disabled?:boolean;
+  disabled?: boolean;
+  badgeCount?: number;
 }
 
 export const BotonIcon = React.forwardRef<any, BotonIconProps>(
@@ -29,6 +31,7 @@ export const BotonIcon = React.forwardRef<any, BotonIconProps>(
       alto = 50,
       libro,
       disabled = false,
+      badgeCount,
     },
     ref
   ) => {
@@ -47,11 +50,11 @@ export const BotonIcon = React.forwardRef<any, BotonIconProps>(
 
     const isFavorite = icono === 'heart' && libro && esFavorito(libro.titulo);
     
-    // Colores para el estado de favorito
     const buttonColor = isFavorite ? "rgba(255, 255, 255, 0.6)" : colorButton;
     const iconColor = isFavorite ? "#AC0505" : colorText;
 
     return (
+      <View style={styles.container}>
         <Pressable
           ref={ref}
           onPress={!disabled ? handlePress : undefined}
@@ -59,7 +62,7 @@ export const BotonIcon = React.forwardRef<any, BotonIconProps>(
             styles.customButton,
             { 
               backgroundColor: disabled 
-                ? `${colorButton}80` // Añade transparencia cuando está deshabilitado
+                ? `${colorButton}80`
                 : pressed 
                   ? "white" 
                   : colorButton, 
@@ -70,29 +73,36 @@ export const BotonIcon = React.forwardRef<any, BotonIconProps>(
           ]}
           disabled={disabled}
         >
-        {({ pressed }) => (
-          <>
-            {texto !== undefined && (
-              <Text style={[styles.text, { color: pressed ? "black" : colorText }]}>
-                {texto}
-              </Text>
-            )}
-            {icono && (
-              <Icono 
-                icon={icono} 
-                size={tamaño} 
-                color={pressed ? "black" : iconColor}
-                solid={isFavorite}
-              />
-            )}
-          </>
+          {({ pressed }) => (
+            <>
+              {texto !== undefined && (
+                <Text style={[styles.text, { color: pressed ? "black" : colorText }]}>
+                  {texto}
+                </Text>
+              )}
+              {icono && (
+                <Icono 
+                  icon={icono} 
+                  size={tamaño} 
+                  color={pressed ? "black" : iconColor}
+                  solid={isFavorite}
+                />
+              )}
+            </>
+          )}
+        </Pressable>
+        {icono === 'cart-shopping' && badgeCount !== undefined && badgeCount > 0 && (
+          <Badge style={styles.badge}>{badgeCount}</Badge>
         )}
-      </Pressable>
+      </View>
     );
   }
 );
 
 const styles = StyleSheet.create({
+  container: {
+    position: 'relative', // Necesario para posicionar el badge absolutamente
+  },
   text: {
     fontWeight: "bold",
     fontSize: 18,
@@ -102,6 +112,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 50,
+  },
+  badge: {
+    position: 'absolute',
+    top: -5, // Ajusta para posicionar en la parte superior
+    right: -5, // Ajusta para posicionar en la parte derecha
+    backgroundColor: '#AC0505', // Color rojo para el badge
+    color: 'white', // Color del texto
+    fontSize: 12, // Tamaño del texto
+    minWidth: 20, // Ancho mínimo
+    height: 20, // Altura fija
+    borderRadius: 10, // Bordes redondeados
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

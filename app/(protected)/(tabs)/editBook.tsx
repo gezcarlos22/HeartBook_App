@@ -1,13 +1,14 @@
 import { Image, SafeAreaView, StyleSheet, ScrollView, ImageBackground, View, Modal, TouchableOpacity, Text } from "react-native";
 import * as React from "react";
-import { LinearGradient } from "expo-linear-gradient";
 import { BotonIcon } from "@/components/BotonIcon";
 import { TextInput } from 'react-native-paper';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { useLibrosSubidos } from '@/contexts/LibrosSubidosContext';
 import { Link, useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
-import { Icono } from "@/components/Icono"; // Asegúrate de importar el componente Icono
+import { Icono } from "@/components/Icono";
+import * as FileSystem from 'expo-file-system';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 export default function EditBook() {
   const router = useRouter();
@@ -22,8 +23,7 @@ export default function EditBook() {
   const [anio, setAnio] = React.useState("");
   const [lenguaje, setLenguaje] = React.useState("");
   const [imagen, setImagen] = React.useState("https://img.freepik.com/vector-gratis/fondo-abstracto-blanco_23-2148806276.jpg?w=360");
-  
-  // Estados para el modal
+  const [isImageLoading, setIsImageLoading] = React.useState(false);
   const [modalVisible, setModalVisible] = React.useState(false);
   const [modalConfig, setModalConfig] = React.useState({
     title: "",
@@ -81,62 +81,100 @@ export default function EditBook() {
     setModalVisible(false);
   };
 
+
+  
+
   const pickImageAsync = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      showModal(
-        "Permisos requeridos", 
-        "Necesitamos acceso a tu galería para seleccionar una imagen", 
-        "error"
-      );
-      return;
-    }
+    try {
+      setIsImageLoading(true);
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        showModal("Permisos requeridos", "Necesitamos acceso a tu galería", "error");
+        return;
+      }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 4],
-      quality: 0.8,
-    });
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [3, 4],
+        quality: 0.7,
+      });
 
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImagen(result.assets[0].uri);
-    } else {
-      showModal("Información", "No se seleccionó ninguna imagen", "info");
+      if (!result.canceled && result.assets?.[0]) {
+        // Optimizar la imagen
+        const optimizedImage = await ImageManipulator.manipulateAsync(
+          result.assets[0].uri,
+          [{ resize: { width: 800 } }],
+          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+        );
+
+        // Guardar en caché
+        const fileName = optimizedImage.uri.split('/').pop();
+        const cachePath = `${FileSystem.cacheDirectory}${fileName}`;
+        await FileSystem.copyAsync({ from: optimizedImage.uri, to: cachePath });
+        
+        setImagen(cachePath);
+      }
+    } catch (error) {
+      showModal("Error", "Error al procesar la imagen", "error");
+      console.error("Image picker error:", error);
+    } finally {
+      setIsImageLoading(false);
     }
   };
 
-  const handleSubirLibro = () => {
+  const handleSubirLibro = async () => {
     if (!camposCompletos()) {
-      showModal(
-        "Error", 
-        "Por favor complete todos los campos y seleccione una imagen", 
-        "error"
-      );
+      showModal("Error", "Complete todos los campos", "error");
       return;
     }
-
-    agregarLibro({
-      titulo,
-      autor,
-      descripcion,
-      genero,
-      precio,
-      paginas,
-      anio,
-      lenguaje,
-      imagen
-    });
-
-    showModal(
-      "Éxito", 
-      "Libro subido correctamente", 
-      "success",
-      () => {
-        setModalVisible(false);
-        router.back();
+  
+    try {
+      let finalImageUri = imagen;
+      
+      // Verificar que FileSystem.cacheDirectory no sea null
+      if (FileSystem.cacheDirectory && imagen.startsWith(FileSystem.cacheDirectory)) {
+        const fileName = imagen.split('/').pop();
+        
+        // Verificar que FileSystem.documentDirectory no sea null
+        if (FileSystem.documentDirectory) {
+          const permanentPath = `${FileSystem.documentDirectory}${fileName}`;
+          await FileSystem.copyAsync({ 
+            from: imagen, 
+            to: permanentPath 
+          });
+          finalImageUri = permanentPath;
+        }
       }
-    );
+  
+      await agregarLibro({
+        titulo,
+        autor,
+        descripcion,
+        genero,
+        precio,
+        paginas,
+        anio,
+        lenguaje,
+        imagen: finalImageUri
+      });
+  
+      // Limpiar formulario
+      setTitulo("");
+      setAutor("");
+      setDescripcion("");
+      setGenero("");
+      setPrecio("");
+      setPaginas("");
+      setAnio("");
+      setLenguaje("");
+      setImagen("https://img.freepik.com/vector-gratis/fondo-abstracto-blanco_23-2148806276.jpg?w=360");
+  
+      showModal("Éxito", "Libro subido correctamente", "success");
+    } catch (error) {
+      showModal("Error", "Error al guardar el libro", "error");
+      console.error("Error saving book:", error);
+    }
   };
 
   const volver = () => {
@@ -147,15 +185,11 @@ export default function EditBook() {
     }
   };
 
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ImageBackground source={require("@/assets/images/fondo30.jpg")} style={styles.background}>
-        <LinearGradient
-          colors={["rgba(0,0,0,1)", "transparent"]}
-          start={{ x: 0, y: 1 }}
-          end={{ x: 0, y: 0.9 }}
-          style={styles.gradient}
-        />
+        <View style={{flex:1}}>
         <ScrollView style={styles.containerScroll}>
           <View style={styles.overlayContainer}>
             <View style={{flexDirection:"row",justifyContent:"center",alignItems:"center", gap:10, padding:10, width:"100%"}}>
@@ -167,7 +201,7 @@ export default function EditBook() {
                 <BotonIcon 
                   icono="image"
                   tamaño={18}
-                  texto="Subir Imagen" 
+                  texto="Subir Imagen " 
                   colorButton="#AC0505"  
                   ancho={170}
                   onPress={pickImageAsync}
@@ -175,7 +209,7 @@ export default function EditBook() {
                 <BotonIcon 
                   icono="camera"
                   tamaño={18}
-                  texto="Tomar Foto" 
+                  texto="Tomar Foto " 
                   colorButton="#AC0505"  
                   ancho={170} 
                   onPress={() => showModal("Info", "Funcionalidad de cámara no implementada", "info")}
@@ -259,6 +293,7 @@ export default function EditBook() {
                   boxStyles={styles.selectStyle}
                   inputStyles={{color:"black", fontSize:18}}
                   dropdownStyles={{backgroundColor:"#dadada"}}
+                  search={false}
                 />
                 <SelectList 
                   setSelected={setLenguaje} 
@@ -268,6 +303,7 @@ export default function EditBook() {
                   boxStyles={styles.selectStyle}
                   inputStyles={{color:"black", fontSize:18}}
                   dropdownStyles={{backgroundColor:"#dadada"}}
+                  search={false}
                 />
               </View>
               <View style={styles.containerCompra}>
@@ -283,9 +319,9 @@ export default function EditBook() {
             </View>
           </View>
         </ScrollView>
+        </View>
       </ImageBackground>
 
-      {/* Modal personalizado */}
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -301,7 +337,7 @@ export default function EditBook() {
               <Icono icon="check-circle" size={40} color="#4CAF50" />
             )}
             {modalConfig.type === "info" && (
-              <Icono icon="info-circle" size={40} color="#2196F3" />
+              <Icono icon="circle-info" size={40} color="#2196F3" />
             )}
             
             <Text style={styles.modalTitle}>{modalConfig.title}</Text>
@@ -356,15 +392,14 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   containerScroll: {
-    paddingBottom:30,
+    marginBottom:60,
+    marginTop:10,
   },
   overlayContainer: {
     height: "100%",
     width: "100%",
-    backgroundColor: "rgba(0,0,0,0.6)",
     paddingHorizontal: 20,
     alignItems: "center",
-    marginBottom:80,
   },
   containerText: {
     flexDirection: "column",
@@ -387,18 +422,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   textInputStyle: {
-    backgroundColor: "rgba(255, 255, 255,0.6)",
+    backgroundColor: "rgba(0, 0, 0,0.2)",
     paddingHorizontal: 10,
     fontSize: 18,
     borderWidth: 1,
-    borderColor: '#dadada',
-  },
+    borderColor: '#9a9a9a',
+   },
   textInputDetalles: {
-    backgroundColor: "rgba(255, 255, 255,0.6)",
+    backgroundColor: "rgba(0, 0, 0,0.2)",
     paddingHorizontal: 10,
     fontSize: 18,
     borderWidth: 1,
-    borderColor: '#dadada',
+    borderColor: '#9a9a9a',
     flex: 1,
   },
   multilineInputStyle: {
@@ -409,9 +444,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius:5,
     borderTopLeftRadius:5,
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255,0.6)",
+    backgroundColor: "rgba(0, 0, 0,0.2)",
     borderWidth: 1,
-    borderColor: '#dadada',
+    borderColor: '#9a9a9a',
     borderRadius: 0,
     height: 50,
   },
@@ -425,12 +460,12 @@ const styles = StyleSheet.create({
     color: "#dadada",
   },
   book:{
+    borderColor:"#9a9a9a",
+    borderWidth:1,
     borderRadius: 10,
     height: 120,
     width: 80,
   },
-
-  // Nuevos estilos para el modal
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',

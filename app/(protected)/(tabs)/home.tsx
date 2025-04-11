@@ -7,7 +7,8 @@ import { CardCategoria } from "@/components/CardCategoria";
 import { CardBusqueda } from "@/components/CardBusqueda"; // Importamos el nuevo componente
 import { libros, librosUsados } from "@/data/libros"; 
 import { categorias } from "@/data/categorias";
-import { LinearGradient } from "expo-linear-gradient";
+import { useCart } from '@/contexts/CartContext';
+
 
 export default function Home() {
   const [loadingMoreVendidos, setLoadingMoreVendidos] = useState(false);
@@ -68,11 +69,14 @@ export default function Home() {
     }, 1000);
   };
 
+  const { librosComprados } = useCart();
+
   return (
     <ImageBackground source={require("@/assets/images/fondo30.jpg")} style={styles.background}>
 
             <SafeAreaView style={styles.container}>
-                <Header titulo="Hola Carlos" onSearch={handleSearch} />
+                <Header titulo="Hola Carlos" onSearch={handleSearch} 
+                cartItemCount={librosComprados.length} />
                 
                 {/* Mostrar resultados de búsqueda o contenido normal */}
                 {showSearchResults ? (

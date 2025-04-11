@@ -4,6 +4,7 @@ import { HeaderCategoria } from "@/components/HeaderCategoria";
 import { CardBusqueda } from "@/components/CardBusqueda";
 import { useLocalSearchParams } from "expo-router";
 import { libros, librosUsados } from "@/data/libros"; 
+import { useCart } from '@/contexts/CartContext';
 
 export default function Categorias() {
   const { titulo, imagen } = useLocalSearchParams();
@@ -44,6 +45,8 @@ export default function Categorias() {
     setFilteredBooks(results);
   };
 
+  const { librosComprados } = useCart();
+
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground source={require("@/assets/images/fondo30.jpg")} style={styles.background}>
@@ -51,6 +54,7 @@ export default function Categorias() {
           titulo={titulo as string} 
           imagen={imagen as string} 
           onSearch={handleSearch} 
+          cartItemCount={librosComprados.length} 
         />
         
         {filteredBooks.length === 0 ? (

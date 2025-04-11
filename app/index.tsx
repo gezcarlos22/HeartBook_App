@@ -1,4 +1,4 @@
-import { SafeAreaView, StyleSheet, ImageBackground, View, Image } from "react-native";
+import { SafeAreaView, StyleSheet, ImageBackground, View, Image, Alert } from "react-native";
 import * as React from "react";
 import { TextInput } from "react-native-paper";
 import { BotonIcon } from "@/components/BotonIcon";
@@ -17,9 +17,12 @@ export default function Login() {
 
   const handleLogin = () => {
     if (camposCompletos()) {
-      // Lógica de autenticación
-      login(email); // Usamos el email como nombre de usuario
-      router.replace("/(protected)/(onBoarding)/uno"); // Redirigir a la pantalla home después del login
+      const success = login(email, password);
+      if (success) {
+        router.replace("/(protected)/(onBoarding)/uno");
+      } else {
+        Alert.alert("Error", "Email o contraseña incorrectos");
+      }
     }
   };
 

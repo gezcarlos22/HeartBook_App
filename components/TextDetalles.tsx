@@ -1,26 +1,32 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
-export const TextDetalles = () => {
+interface TextDetallesProps {
+  paginas?: number;
+  anio?: number;
+  lenguaje?: string;
+}
+
+export const TextDetalles = ({paginas,anio, lenguaje}:TextDetallesProps) => {
   return (
     <View style={styles.containerDetalles}>
       <View style={[styles.detalle, styles.firstDetalle]}>
         <Text style={[styles.description, { fontSize: 14, color: "#666666" }]}>
           Page
         </Text>
-        <Text style={styles.description}>416</Text>
+        <Text style={styles.description}>{paginas}</Text>
       </View>
       <View style={styles.detalle}>
         <Text style={[styles.description, { fontSize: 14, color: "#666666" }]}>
           Year
         </Text>
-        <Text style={styles.description}>2015</Text>
+        <Text style={styles.description}>{anio}</Text>
       </View>
       <View style={styles.detalle}>
         <Text style={[styles.description, { fontSize: 14, color: "#666666" }]}>
           Lang
         </Text>
-        <Text style={styles.description}>ES</Text>
+        <Text style={styles.description}>{lenguaje}</Text>
       </View>
     </View>
   );
