@@ -81,9 +81,6 @@ export default function EditBook() {
     setModalVisible(false);
   };
 
-
-  
-
   const pickImageAsync = async () => {
     try {
       setIsImageLoading(true);
@@ -118,6 +115,45 @@ export default function EditBook() {
     } catch (error) {
       showModal("Error", "Error al procesar la imagen", "error");
       console.error("Image picker error:", error);
+    } finally {
+      setIsImageLoading(false);
+    }
+  };
+
+  const takePhotoAsync = async () => {
+    try {
+      setIsImageLoading(true);
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        showModal("Permisos requeridos", "Necesitamos acceso a tu cámara", "error");
+        return;
+      }
+
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [3, 4],
+        quality: 0.7,
+      });
+
+      if (!result.canceled && result.assets?.[0]) {
+        // Optimizar la imagen
+        const optimizedImage = await ImageManipulator.manipulateAsync(
+          result.assets[0].uri,
+          [{ resize: { width: 800 } }],
+          { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+        );
+
+        // Guardar en caché
+        const fileName = optimizedImage.uri.split('/').pop();
+        const cachePath = `${FileSystem.cacheDirectory}${fileName}`;
+        await FileSystem.copyAsync({ from: optimizedImage.uri, to: cachePath });
+        
+        setImagen(cachePath);
+      }
+    } catch (error) {
+      showModal("Error", "Error al tomar la foto", "error");
+      console.error("Camera error:", error);
     } finally {
       setIsImageLoading(false);
     }
@@ -212,7 +248,7 @@ export default function EditBook() {
                   texto="Tomar Foto " 
                   colorButton="#AC0505"  
                   ancho={170} 
-                  onPress={() => showModal("Info", "Funcionalidad de cámara no implementada", "info")}
+                  onPress={takePhotoAsync}
                 />
               </View>
             </View>

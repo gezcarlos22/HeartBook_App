@@ -1,87 +1,73 @@
 import * as React from "react";
-import { View, StyleSheet, ImageBackground, Text, Image, SafeAreaView, ScrollView } from "react-native";
-import { Link, router } from "expo-router";
+import { View, StyleSheet, ImageBackground, Text, Image, SafeAreaView, ScrollView, Alert } from "react-native";
+import { Link, useRouter, useLocalSearchParams } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { BotonIcon } from "@/components/BotonIcon";
 import { TextDetalles } from "@/components/TextDetalles";
-import { useLocalSearchParams } from "expo-router";
 import { useCart } from "@/contexts/CartContext";
 import { useFavoritos } from '@/contexts/FavoritosContext';
+import { useLibrosSubidos } from '@/contexts/LibrosSubidosContext';
 import { HeaderCarrito } from "@/components/HeaderCarrito";
-import FastImage from 'react-native-fast-image';
-import { ActivityIndicator } from 'react-native';
+
 export default function DetalleBoock() {
   const { agregarAlCarrito, librosComprados } = useCart();
   const { agregarFavorito, removerFavorito, esFavorito } = useFavoritos();
-  const libro = useLocalSearchParams();
-  
+  const { librosSubidos, eliminarLibro } = useLibrosSubidos();
+  const router = useRouter();
+  const libroParams = useLocalSearchParams();
+
   const libroActual = {
-    imagen: typeof libro.imagen === "string" ? libro.imagen : "https://img.freepik.com/vector-gratis/fondo-abstracto-blanco_23-2148806276.jpg?w=360",
-    portada: typeof libro.portada === "string" ? libro.portada : "https://img.freepik.com/vector-gratis/fondo-abstracto-blanco_23-2148806276.jpg?w=360",
-    titulo: typeof libro.titulo === "string" ? libro.titulo : "Título no disponible",
-    autor: typeof libro.autor === "string" ? libro.autor : "Autor no disponible",
-    descripcion: typeof libro.descripcion === "string" ? libro.descripcion : "Descripción no disponible",
-    genero: typeof libro.genero === "string" ? libro.genero : "Género no disponible",
-    precio: typeof libro.precio === "string" ? parseFloat(libro.precio) : 0,
-    paginas: typeof libro.paginas === "string"  ? parseInt(libro.paginas) : 0,
-    anio: typeof libro.anio === "string" ? parseInt(libro.anio) : 0,
-    lenguaje: typeof libro.lenguaje === "string" ? libro.lenguaje : "ES",
+    id: typeof libroParams.id === "string" && libroParams.id.length > 0 ? libroParams.id : "",
+    imagen: typeof libroParams.imagen === "string" ? libroParams.imagen : "https://img.freepik.com/vector-gratis/fondo-abstracto-blanco_23-2148806276.jpg?w=360",
+    portada: typeof libroParams.portada === "string" ? libroParams.portada : "https://img.freepik.com/vector-gratis/fondo-abstracto-blanco_23-2148806276.jpg?w=360",
+    titulo: typeof libroParams.titulo === "string" ? libroParams.titulo : "Título no disponible",
+    autor: typeof libroParams.autor === "string" ? libroParams.autor : "Autor no disponible",
+    descripcion: typeof libroParams.descripcion === "string" ? libroParams.descripcion : "Descripción no disponible",
+    genero: typeof libroParams.genero === "string" ? libroParams.genero : "Género no disponible",
+    precio: typeof libroParams.precio === "string" ? parseFloat(libroParams.precio) : 0,
+    paginas: typeof libroParams.paginas === "string" ? parseInt(libroParams.paginas) : 0,
+    anio: typeof libroParams.anio === "string" ? parseInt(libroParams.anio) : 0,
+    lenguaje: typeof libroParams.lenguaje === "string" ? libroParams.lenguaje : "ES",
   };
 
-  const esFavoritoActual = esFavorito(libroActual.titulo);
+  const esLibroSubido = React.useMemo(() => {
+    if (!libroActual.id) return false;
+    return librosSubidos.some(libro => libro.id === libroActual.id);
+  }, [librosSubidos, libroActual.id]);
+
+  const esFavoritoActual = esFavorito(libroActual.id);
   const estaEnCarrito = librosComprados.some(libro => libro.titulo === libroActual.titulo);
 
-  const handleAgregarAlCarrito = () => {
-    agregarAlCarrito(libroActual);
-  };
+  const handleAgregarAlCarrito = () => agregarAlCarrito(libroActual);
 
   const handleFavoritoPress = () => {
-    if (esFavoritoActual) {
-      removerFavorito(libroActual.titulo);
-    } else {
-      agregarFavorito(libroActual);
-    }
+    esFavoritoActual
+      ? removerFavorito(libroActual.id)
+      : agregarFavorito(libroActual);
+  };
+
+  const handleEditarLibro = () => {
+    router.push({
+      pathname: "/editBook",
+      params: libroActual
+    });
+  };
+
+  const volver = () => {
+    router.canGoBack()
+      ? router.back()
+      : router.dismissTo("/(protected)/(tabs)/home");
   };
 
   const navCarrito = () => {
     router.navigate("/(protected)/carrito")
   };
 
-  const BookImage = React.memo(({ uri }: { uri: string }) => {
-    const [isLoading, setIsLoading] = React.useState(true);
-  
-    return (
-      <View style={styles.bookContainer}>
-        <FastImage
-          source={{ 
-            uri: uri,
-            priority: FastImage.priority.high,
-            cache: FastImage.cacheControl.immutable
-          }}
-          style={styles.book}
-          resizeMode={FastImage.resizeMode.contain}
-          onLoadStart={() => setIsLoading(true)}
-          onLoadEnd={() => setIsLoading(false)}
-          onError={() => console.log("Error loading image")}
-        />
-        {isLoading && (
-          <ActivityIndicator 
-            style={styles.loadingIndicator} 
-            size="large" 
-            color="#AC0505" 
-          />
-        )}
-      </View>
-    );
-  });
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <ImageBackground
-          source={{
-            uri: libroActual.portada,
-          }}
+          source={{ uri: libroActual.portada }}
           style={styles.image}
           resizeMode="cover"
         >
@@ -107,43 +93,71 @@ export default function DetalleBoock() {
             end={{ x: 0, y: 0 }}
             style={styles.gradient}
           />
-          <BookImage uri={libroActual.imagen} />
+          <Image
+            style={styles.book}
+            source={{ uri: libroActual.imagen }}
+          />
           <View style={styles.iconHeart}>
-            <Text style={[styles.description, { textAlign:"center", fontSize: 14}]}>{libro.genero}</Text>
+            <Text style={[styles.description, { textAlign: "center", fontSize: 14 }]}>
+              {libroActual.genero}
+            </Text>
             <BotonIcon 
-              icono="heart" 
-              tamaño={20} 
+              icono="heart"
+              tamaño={20}
               onPress={handleFavoritoPress}
-              colorButton={esFavoritoActual ? "rgba(0, 0, 0, 0.6)": "rgba(0, 0, 0, 0.6)"}
+              colorButton="rgba(0, 0, 0, 0.6)"
               colorText={esFavoritoActual ? "black" : "white"}
               libro={libroActual}
             />
           </View>
+
           <View style={styles.containerText}>
-            <Text style={styles.title}>{libro.titulo}</Text>
-            <Text style={[styles.description, { textAlign:"center"}]}>{libro.autor}</Text>
+            <Text style={styles.title}>{libroActual.titulo}</Text>
+            <Text style={[styles.description, { textAlign: "center" }]}>
+              {libroActual.autor}
+            </Text>
           </View>
-          <TextDetalles paginas={libroActual.paginas} anio={libroActual.anio} lenguaje={libroActual.lenguaje}/>
-          <View style={[{width:"100%", marginBottom:5}]}>
-            <Text style={[styles.description, { fontSize: 18 }]}>Descripcion</Text>
+
+          <TextDetalles paginas={libroActual.paginas} anio={libroActual.anio} lenguaje={libroActual.lenguaje} />
+
+          <View style={{ width: "100%", marginBottom: 5 }}>
+            <Text style={[styles.description, { fontSize: 18 }]}>Descripción</Text>
           </View>
-          <ScrollView> 
-            <Text style={[styles.description, { fontSize: 14, color:"#666666" }]}>{libro.descripcion}</Text>
+
+          <ScrollView>
+            <Text style={[styles.description, { fontSize: 14, color: "#666666" }]}>
+              {libroActual.descripcion}
+            </Text>
           </ScrollView>
+
           <View style={styles.containerCompra}>
             <View style={styles.containerPrecio}>
-              <Text style={[styles.description, { fontSize: 14, color:"#666666" }]}>Precio</Text>
-              <Text style={[styles.title, { fontSize: 25, color:"black",marginTop: -7,}]}>${libroActual.precio}</Text>
+              <Text style={[styles.description, { fontSize: 14, color: "#666666" }]}>
+                Precio
+              </Text>
+              <Text style={[styles.title, { fontSize: 25, color: "black", marginTop: -7 }]}>
+                ${libroActual.precio}
+              </Text>
             </View>
-            <View>           
-              <BotonIcon 
-                alto={40} 
-                ancho={170} 
-                texto={estaEnCarrito ? "En el carrito" : "Agregar al carrito"} 
-                colorButton={estaEnCarrito ? '#4CAF50': "#AC0505"} 
-                onPress={estaEnCarrito ? undefined : handleAgregarAlCarrito}
-                disabled={estaEnCarrito}
-              />
+            <View>
+              {esLibroSubido ? (
+                <BotonIcon 
+                  alto={40}
+                  ancho={170}
+                  texto="Editar libro"
+                  colorButton="#AC0505"
+                  onPress={handleEditarLibro}
+                />
+              ) : (
+                <BotonIcon
+                  alto={40}
+                  ancho={170}
+                  texto={estaEnCarrito ? "En el carrito" : "Agregar al carrito"}
+                  colorButton={estaEnCarrito ? "#4CAF50" : "#AC0505"}
+                  onPress={estaEnCarrito ? undefined : handleAgregarAlCarrito}
+                  disabled={estaEnCarrito}
+                />
+              )}
             </View>
           </View>
         </View>
@@ -238,14 +252,5 @@ const styles = StyleSheet.create({
     alignItems:"center",
     marginTop:-40,
     marginBottom:-10,
-  },
-  bookContainer: {
-    position: 'relative',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: -80,
-  },
-  loadingIndicator: {
-    position: 'absolute',
-  },
+  }
 });

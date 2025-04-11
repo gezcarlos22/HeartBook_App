@@ -53,7 +53,7 @@ export default function TabLayout() {
             source={
                 focused
                   ? require('@/assets/images/logo-gris.png')
-                  : require('@/assets/images/icon.png')
+                  : require('@/assets/images/logo.png')
               }
               style={{
                 width: 50, // Ajusta el ancho de la imagen

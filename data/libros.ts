@@ -1,4 +1,5 @@
 interface Libros {
+    id:string;
     imagen: string;
     titulo: string;
     precio: number;
