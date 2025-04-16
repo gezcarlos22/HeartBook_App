@@ -1,18 +1,30 @@
-import { SafeAreaView, StyleSheet, ImageBackground, View, Image, Alert } from "react-native";
+import { SafeAreaView, StyleSheet, ImageBackground, View, Image } from "react-native";
 import * as React from "react";
 import { TextInput } from "react-native-paper";
 import { BotonIcon } from "@/components/BotonIcon";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/auth";
+import { AlertModal } from "@/components/AlertModal";
 
 export default function Login() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [alertVisible, setAlertVisible] = React.useState(false);
+  const [alertConfig, setAlertConfig] = React.useState({
+    title: "",
+    message: "",
+    type: "error" as "error" | "success" | "info",
+  });
   const { login } = useAuth();
   const router = useRouter();
 
   const camposCompletos = () => {
     return email.trim() !== "" && password.trim() !== "";
+  };
+
+  const showAlert = (title: string, message: string, type: "error" | "success" | "info" = "error") => {
+    setAlertConfig({ title, message, type });
+    setAlertVisible(true);
   };
 
   const handleLogin = () => {
@@ -21,7 +33,7 @@ export default function Login() {
       if (success) {
         router.replace("/(protected)/(onBoarding)/uno");
       } else {
-        Alert.alert("Error", "Email o contraseña incorrectos");
+        showAlert("Error", "Email o contraseña incorrectos", "error");
       }
     }
   };
@@ -71,6 +83,18 @@ export default function Login() {
           </View>
         </View>
       </ImageBackground>
+
+      <AlertModal
+        visible={alertVisible}
+        onConfirm={() => setAlertVisible(false)}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        icon={alertConfig.type === "error" ? "user-xmark" : 
+              alertConfig.type === "success" ? "check-circle" : "info-circle"}
+        iconColor={alertConfig.type === "error" ? "#AC0505" : 
+                   alertConfig.type === "success" ? "#4CAF50" : "#2196F3"}
+        type={alertConfig.type}
+      />
     </SafeAreaView>
   );
 }
